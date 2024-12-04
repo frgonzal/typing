@@ -2,6 +2,8 @@ import Word from "../Word";
 import { useState, useRef, useEffect } from "react";
 import './styles.css';
 
+const API_WORDS = 'https://random-word-api.herokuapp.com/word?number=42';
+
 const KEYS = {
   BACKSPACE: "Backspace",
   SPACE: " ",
@@ -18,14 +20,14 @@ function Typewriter({hasEnded, notifyStart}: TypewriterProps) {
   const [activeLetterIdx, setActiveLetterIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [words, setWords] = useState([]);
+  const [words, setWords] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchWords = async () => {
       try {
-        const response = await fetch('https://random-word-api.herokuapp.com/word?number=42');
+        const response = await fetch(API_WORDS);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

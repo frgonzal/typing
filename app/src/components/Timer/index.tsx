@@ -3,30 +3,28 @@ import { useEffect } from "react";
 
 interface TimerProps {
   hasStarted: boolean;
-  stopTimer: () => void;
-  initialTime?: number;
+  initialTime: number;
+  notifyEnd: () => void;
 }
 
-function Timer({hasStarted, stopTimer, initialTime = 30}: TimerProps) {
+function Timer({hasStarted, initialTime, notifyEnd}: TimerProps) {
   const [time, setTime] = useState(initialTime);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTime((prevTime) => {
-        if (!hasStarted) {
-          return initialTime;
-        }
+    if (!hasStarted) return;
 
+    const intervalId = setInterval(() => {
+      setTime((prevTime: number) => {
         if (prevTime <= 1) {
-          stopTimer?.();
           clearInterval(intervalId);
+          setTimeout(() => notifyEnd(), 0);
           return 0;
         }
         return prevTime - 1;
       })
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [stopTimer]);
+  }, [hasStarted]);
 
   return (
     <h3 className="text-warning">{time}</h3>

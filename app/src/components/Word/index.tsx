@@ -1,19 +1,33 @@
 import Letter from "../Letter";
+import Space from "../Letter/Space";
+import './styles.css'
 
 interface WordProps {
-  word: string;
-  active?: boolean;
-  activeLetterIndex?: number;
+  children: string;
+  wordIdx: number;
+  active: boolean;
+  activeLetterIdx: number;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 
-function Word({word, active = false, activeLetterIndex = 0}: WordProps) {
+function Word({children, wordIdx, active, activeLetterIdx, inputRef}: WordProps) {
+  const word = children;
+
   return (
     <span className={`word ${active ? "active" : ""}`}>
-      {word.split('').map((letter, index) => {
-        return (
-          <Letter key={index} letter={letter} active={active && index === activeLetterIndex}/>
-        )})}
+      {  
+        word.split('').map((letter, index) => {
+          return (
+            <span key={letter + String(index)} className="letter">
+              <Letter wordIdx={wordIdx} letterIdx={index} active={active && index === activeLetterIdx} inputRef={inputRef}>
+                {letter}
+              </Letter>
+            </span>
+          )}
+        )
+      }
+      <Space active={active && word.length === activeLetterIdx}/>
     </span>
   );
 }

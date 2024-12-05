@@ -1,5 +1,4 @@
 import Letter from "../Letter";
-import Space from "../Letter/Space";
 import './styles.css'
 
 interface WordProps {

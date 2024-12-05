@@ -1,3 +1,4 @@
+import '../Word/styles.css'
 import './styles.css'
 
 interface SpaceProps {
@@ -6,7 +7,9 @@ interface SpaceProps {
 
 function Space({active}: SpaceProps) {
   return (
-    <span className={`font-monospace space ${active && "active" }`}> </span>
+    <span className={`word font-monospace space ${active && "active" }`}>
+      &nbsp;
+    </span>
   );
 }
 

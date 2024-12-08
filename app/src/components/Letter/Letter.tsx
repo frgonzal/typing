@@ -3,10 +3,8 @@ import './styles.css'
 
 interface LetterProps {
   children: string;
-  wordIdx: number;
-  letterIdx: number;
+  inputLetter?: string;
   active: boolean;
-  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 const STATUS = {
@@ -15,35 +13,23 @@ const STATUS = {
   NOT_GUESSED: "not-guessed",
 }
 
-function checkLetter(letter: string, wordIdx: number, letterIdx: number, inputRef: React.RefObject<HTMLInputElement>) {
-  const value = inputRef?.current?.value;
-  if (!value) 
-    return STATUS.NOT_GUESSED;
+function Letter({children, inputLetter = "", active}: LetterProps) {
+  const letter = children;
 
-  const words = value.split(" ");
-  if (wordIdx >= words.length)
-    return STATUS.NOT_GUESSED;
-
-  const letters = words[wordIdx];
-  if (letterIdx >= letters.length) {
-    return STATUS.NOT_GUESSED;
-  } else if (words[wordIdx][letterIdx] === letter) {
-    return STATUS.CORRECT;
-  } else {
-    return STATUS.INCORRECT;
-  }
-}
-
-
-function Letter({children, wordIdx, letterIdx, active, inputRef}: LetterProps) {
   const letterStatus = useMemo(() => {
-    return checkLetter(children, wordIdx, letterIdx, inputRef);
-  }, [active]);
+    if (inputLetter === "")
+      return STATUS.NOT_GUESSED;
+
+    if (inputLetter === letter)
+      return STATUS.CORRECT;
+    else
+      return STATUS.INCORRECT;
+
+  }, [inputLetter, active]);
 
   return (
-    <span 
-      className={`font-monospace letter ${active ? "active" : ""} ${letterStatus}`}>
-      {children}
+    <span className={`font-monospace letter ${active ? "active" : ""} ${letterStatus}`}>
+      {letter}
     </span>
   );
 }

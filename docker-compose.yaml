@@ -8,3 +8,32 @@ services:
     volumes:
       - ./app:/app
       - ./app/node_modules:/app/node_modules
+
+  # New service for the Django API
+  api:
+    build: ./api
+    container_name: django_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/api
+    depends_on:
+      - db
+    environment:
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    command: gunicorn api.wsgi:application --bind 0.0.0.0:8000
+
+  # Database service for the Django API
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdb
+
+volumes:
+  postgres_data:

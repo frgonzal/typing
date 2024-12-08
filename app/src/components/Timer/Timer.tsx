@@ -1,23 +1,34 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import { GAME_STATUS } from "../Game/Game"
 
 interface TimerProps {
-  hasStarted: boolean;
+  gameStatus: string,
   initialTime: number;
   notifyEnd: () => void;
 }
 
-function Timer({hasStarted, initialTime, notifyEnd}: TimerProps) {
+function Timer({gameStatus, initialTime, notifyEnd}: TimerProps) {
   const [time, setTime] = useState(initialTime);
-  const displayMode = hasStarted ? "block" : "none";
+  const displayMode = 
+      (gameStatus === GAME_STATUS.RUNNING) ?
+      "block" : "none";
 
   useEffect(() => {
-    if (!hasStarted) return;
+    if (gameStatus === GAME_STATUS.WAITING) {
+      setTime(initialTime);
+      return;
+    }
+
+    if (gameStatus === GAME_STATUS.ENDED) {
+      return;
+    }
 
     const intervalId = setInterval(() => {
       setTime((prevTime: number) => {
-        if (prevTime <= 1) {
-          clearInterval(intervalId);
+        if (prevTime === 0)
+          return 0;
+        if (prevTime === 1) {
           setTimeout(() => notifyEnd(), 0);
           return 0;
         }
@@ -25,7 +36,7 @@ function Timer({hasStarted, initialTime, notifyEnd}: TimerProps) {
       })
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [hasStarted]);
+  }, [gameStatus]);
 
   return (
     <h3 className="text-warning" style={{display: displayMode}}>{time}</h3>

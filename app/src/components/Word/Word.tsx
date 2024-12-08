@@ -1,26 +1,42 @@
+import { useMemo } from "react";
 import Letter from "../Letter";
-import './styles.css'
+import './styles.css';
 
 interface WordProps {
   children: string;
-  wordIdx: number;
+  inputWord: string,
   active: boolean;
-  activeLetterIdx: number;
-  inputRef: React.RefObject<HTMLInputElement>;
 }
 
+const STATUS = {
+  CORRECT: "word-correct",
+  INCORRECT: "word-incorrect",
+  NOT_GUESSED: "word-not-guessed",
+}
 
-function Word({children, wordIdx, active, activeLetterIdx, inputRef}: WordProps) {
+function Word({children, inputWord, active}: WordProps) {
   const word = children;
 
+  const wordStatus = useMemo(() => {
+    if (inputWord === "" || active)
+      return STATUS.NOT_GUESSED;
+
+    if (inputWord === word)
+      return STATUS.CORRECT;
+    else
+      return STATUS.INCORRECT;
+  }, [inputWord, active]);
+
   return (
-    <span className={`word font-monospace ${active ? "active" : ""}`}>
+    <span className={`font-monospace word ${wordStatus}`}>
       {  
         word.split('').map((letter, index) => {
+          const isActiveLetter = active && index === inputWord.length;
+          const inputLetter = (index < inputWord.length) ? inputWord[index] : "";
           return (
             <span key={letter + String(index)} className="letter">
-              <Letter wordIdx={wordIdx} letterIdx={index} active={active && index === activeLetterIdx} inputRef={inputRef}>
-                {letter}
+              <Letter inputLetter={inputLetter} active={isActiveLetter}>
+                  {letter}
               </Letter>
             </span>
           )}

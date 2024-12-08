@@ -1,131 +1,171 @@
 import Word from "../Word";
 import Space from "../Letter/Space";
+import InputTypewriter from "./InputTypewriter";
 import { useState, useRef, useEffect } from "react";
 import './styles.css';
+import { GAME_STATUS } from "../Game/Game";
 
-const API_WORDS = 'https://random-word-api.herokuapp.com/word?number=42';
+// const API_WORDS = 'https://random-word-api.herokuapp.com/word?number=42';
 
 const KEYS = {
   BACKSPACE: "Backspace",
   SPACE: " ",
 }
 
+const ALPHABET = /^[a-zA-Z0-9]$/;
+
+const WORDS = [
+  "hello",
+  "typist",
+  "component",
+  "random",
+  "word",
+  "letter",
+  "space",
+  "hello",
+  "typist",
+  "component",
+  "random",
+  "word",
+  "letter",
+  "space",
+  "input",
+  "input",
+  "hello",
+  "typist",
+  "component",
+  "random",
+  "word",
+  "letter",
+  "space",
+  "input",
+  "input",
+];
+
+
 interface TypewriterProps {
-  hasEnded: boolean;
+  gameStatus: string;
   notifyStart: () => void;
 }
 
-function Typewriter({hasEnded, notifyStart}: TypewriterProps) {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [activeWordIdx, setActiveWordIdx] = useState(0);
-  const [activeLetterIdx, setActiveLetterIdx] = useState(0);
+const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
+  const [inputValue, setInputValue] = useState<string[]>([""]);
+  const activeWordIdx = Math.max(inputValue.length - 1, 0);
+  const activeLetterIdx = inputValue[activeWordIdx]?.length || 0;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [words, setWords] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        const response = await fetch(API_WORDS);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setWords(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (gameStatus === GAME_STATUS.WAITING) {
+      setInputValue([""]);
+    }
+    inputRef.current?.focus();
+  }, [gameStatus]);
 
-    fetchWords();
-  }, []);
+  const words = WORDS;
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  // useEffect(() => {
+  //   const fetchWords = async () => {
+  //     try {
+  //       const response = await fetch(API_WORDS);
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+  //       const data = await response.json();
+  //       setWords(data);
+  //     } catch (err: any) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-
-  const focusInput = () => {
-    const input = inputRef.current;
-    if (input) input.focus(); 
-  }
+  //   fetchWords();
+  // }, []);
 
   const handleStart = () => {
-    if (!hasStarted) {
-      setHasStarted(true);
-      focusInput();
+    if (gameStatus === GAME_STATUS.WAITING) {
       notifyStart();
+      setInputValue([""]);
     }
   }
 
   const handleInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (hasEnded) return;
+    if (gameStatus === GAME_STATUS.ENDED) 
+      return;
+    if (gameStatus === GAME_STATUS.WAITING) {
+      if (!ALPHABET.test(e.key))
+        return;
+      handleStart();
+    }
 
-    const input = inputRef?.current;
-    if (!input) return;
+    if (e.key == KEYS.BACKSPACE) {
+      if (activeWordIdx === 0 && activeLetterIdx === 0) {
+        return;
+      }
+      setInputValue((words: string[]) => {
+        const newWords = [...words];
+        if (activeLetterIdx > 0) {
+          newWords[activeWordIdx] = newWords[activeWordIdx].slice(0, activeLetterIdx - 1);
+        } else {
+          newWords.pop();
+        }
+        return newWords;
+      });
+      return;
+    }
 
-    if (activeWordIdx === words.length && e.key != KEYS.BACKSPACE) {
+    if (activeWordIdx === words.length) {
       return;
     }
 
     if (e.key === KEYS.SPACE) {
       if (activeLetterIdx === 0) 
         return;
-      input.value += " ";
-      setActiveWordIdx((idx: number) => idx + 1);
-      setActiveLetterIdx(0);
-      return;
-    }
-
-    if (e.key == KEYS.BACKSPACE) {
-      input.value = input.value.slice(0, -1); 
-      if (activeLetterIdx > 0) {
-        setActiveLetterIdx((idx: number) => idx - 1);
-      } else if (activeWordIdx > 0) {
-        setActiveWordIdx((idx: number) => idx - 1);
-        const inputWord = input.value.split(" ")[activeWordIdx - 1];
-        setActiveLetterIdx(inputWord.length);
-      }
-      return;
+      setInputValue((words: string[]) => {
+        const newWords = [...words];
+        newWords.push("");
+        return newWords;
+      });
     }
 
     if (activeLetterIdx >= words[activeWordIdx].length)
       return;
 
-    const alphanumericRegex = /^[a-zA-Z0-9]$/;
-    if (alphanumericRegex.test(e.key)) {
-      input.value += e.key;
-      setActiveLetterIdx((idx: number) => idx + 1);
-      if (activeLetterIdx === words[activeWordIdx].length) {
-        setActiveWordIdx((idx: number) => idx + 1);
-        setActiveLetterIdx(0);
-      }
-      return;
+    if (ALPHABET.test(e.key)) {
+      setInputValue((words: string[]) => {
+        const newWords = [...words];
+        newWords[activeWordIdx] += e.key;
+        return newWords;
+      });
     }
   }
+
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error}</p>;
 
   return (
     <div 
       className="ps-4" 
-      onMouseOver={focusInput} 
-      onKeyDown={handleStart} 
+      onMouseOver={() => inputRef.current?.focus()} 
       tabIndex={0}>
-      <input ref={inputRef} id="input-typewriter" onKeyDown={handleInput} autoFocus></input>
+      <InputTypewriter inputRef={inputRef} onKeyDown={handleInput} />
         {  
           words.map((word: string, index: number) => {
+            const isActiveWord = index === activeWordIdx;
+            const inputWord = (index < inputValue.length) ? inputValue[index] : "";
+
             return (
-              <span key = {word + String(index)} style={{display: "inline-block"}}>
-                <Word wordIdx={index} active={activeWordIdx === index} activeLetterIdx={activeLetterIdx} inputRef={inputRef}>
+              <span key={word + String(index)} className="word-space">
+                <Word inputWord={inputWord} active={isActiveWord}>
                   {word}
                 </Word>
                 <Space active={index === activeWordIdx && word.length === activeLetterIdx}/>
               </span>
-            );
-          })
+            )}
+          )
         }
     </div>
   );

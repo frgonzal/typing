@@ -1,18 +1,15 @@
 from django.http import HttpRequest
 from django.views import View
 from django.http import JsonResponse
-# from django.shortcuts import render
-
+from .models import EnglishWord
 
 class WordsAPI(View):
     """API for random words"""
 
     def get(self, request: HttpRequest, nWords = 1):
         """Get random word"""
-        data = [
-            "apple",
-            "banana",
-        ]
-        return JsonResponse(data, safe=False)
+        words_obj = EnglishWord.objects.order_by('?')[:nWords]
+        words = [word.word for word in words_obj]
+        return JsonResponse(words, safe=False)
 
 

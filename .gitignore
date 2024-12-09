@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 
 venv/
+db.sqlite3
+.env
+
+cert.pem
+key.pem
+
+migrations/
+staticfiles/

@@ -1,0 +1,22 @@
+[
+    {"model": "words.EnglishWord", "pk": 1, "fields": {"word": "example"}},
+    {"model": "words.EnglishWord", "pk": 2, "fields": {"word": "sample"}},
+    {"model": "words.EnglishWord", "pk": 3, "fields": {"word": "test"}},
+    {"model": "words.EnglishWord", "pk": 4, "fields": {"word": "learning"}},
+    {"model": "words.EnglishWord", "pk": 5, "fields": {"word": "coding"}},
+    {"model": "words.EnglishWord", "pk": 6, "fields": {"word": "programming"}},
+    {"model": "words.EnglishWord", "pk": 7, "fields": {"word": "python"}},
+    {"model": "words.EnglishWord", "pk": 8, "fields": {"word": "development"}},
+    {"model": "words.EnglishWord", "pk": 9, "fields": {"word": "database"}},
+    {"model": "words.EnglishWord", "pk": 10, "fields": {"word": "framework"}},
+    {"model": "words.EnglishWord", "pk": 11, "fields": {"word": "algorithm"}},
+    {"model": "words.EnglishWord", "pk": 12, "fields": {"word": "data"}},
+    {"model": "words.EnglishWord", "pk": 13, "fields": {"word": "structure"}},
+    {"model": "words.EnglishWord", "pk": 14, "fields": {"word": "network"}},
+    {"model": "words.EnglishWord", "pk": 15, "fields": {"word": "function"}},
+    {"model": "words.EnglishWord", "pk": 16, "fields": {"word": "variable"}},
+    {"model": "words.EnglishWord", "pk": 17, "fields": {"word": "object"}},
+    {"model": "words.EnglishWord", "pk": 18, "fields": {"word": "class"}},
+    {"model": "words.EnglishWord", "pk": 19, "fields": {"word": "method"}},
+    {"model": "words.EnglishWord", "pk": 20, "fields": {"word": "array"}}
+]

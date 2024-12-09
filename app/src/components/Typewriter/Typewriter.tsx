@@ -4,8 +4,10 @@ import InputTypewriter from "./InputTypewriter";
 import { useState, useRef, useEffect } from "react";
 import './styles.css';
 import { GAME_STATUS } from "../Game/Game";
+import useFetch from "../../hooks/useFetch";
 
 // const API_WORDS = 'https://random-word-api.herokuapp.com/word?number=42';
+const API_WORDS = "http://localhost/words/api/10/"
 
 const KEYS = {
   BACKSPACE: "Backspace",
@@ -14,35 +16,6 @@ const KEYS = {
 
 const ALPHABET = /^[a-zA-Z0-9]$/;
 
-const WORDS = [
-  "hello",
-  "typist",
-  "component",
-  "random",
-  "word",
-  "letter",
-  "space",
-  "hello",
-  "typist",
-  "component",
-  "random",
-  "word",
-  "letter",
-  "space",
-  "input",
-  "input",
-  "hello",
-  "typist",
-  "component",
-  "random",
-  "word",
-  "letter",
-  "space",
-  "input",
-  "input",
-];
-
-
 interface TypewriterProps {
   gameStatus: string;
   notifyStart: () => void;
@@ -50,39 +23,23 @@ interface TypewriterProps {
 
 const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
   const [inputValue, setInputValue] = useState<string[]>([""]);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
   const activeWordIdx = Math.max(inputValue.length - 1, 0);
   const activeLetterIdx = inputValue[activeWordIdx]?.length || 0;
   const inputRef = useRef<HTMLInputElement>(null);
+  const { data, error, isLoading } = useFetch<string[]>(API_WORDS, reloadTrigger);
+  const words = data || [];
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.WAITING) {
+      setReloadTrigger(reloadTrigger + 1);
       setInputValue([""]);
     }
     inputRef.current?.focus();
   }, [gameStatus]);
 
-  const words = WORDS;
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchWords = async () => {
-  //     try {
-  //       const response = await fetch(API_WORDS);
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-  //       const data = await response.json();
-  //       setWords(data);
-  //     } catch (err: any) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchWords();
-  // }, []);
+  if (isLoading) return <p> Loading...</p>;
+  if (data === undefined) return <p>Error: {error?.message}</p>;
 
   const handleStart = () => {
     if (gameStatus === GAME_STATUS.WAITING) {
@@ -142,9 +99,6 @@ const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
       });
     }
   }
-
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
 
   return (
     <div 

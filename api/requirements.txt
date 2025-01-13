@@ -1,7 +1,0 @@
-asgiref
-Django
-sqlparse
-gunicorn
-python-decouple
-django-cors-headers
-psycopg2-binary

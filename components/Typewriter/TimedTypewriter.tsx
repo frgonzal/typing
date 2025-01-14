@@ -10,27 +10,48 @@ import useFetch from "@/hooks/useFetch";
 interface TypewriterProps {
   gameStatus: symbol;
   notifyStart: () => void;
+  reload: number;
 }
 
-const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
+const Typewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) => {
   const [inputValue, setInputValue] = useState<string[]>([""]);
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const activeWordIdx = Math.max(inputValue.length - 1, 0);
   const activeLetterIdx = inputValue[activeWordIdx]?.length || 0;
   const inputRef = useRef<HTMLInputElement>(null);
-  const { data, error, isLoading } = useFetch<string[]>(API_WORDS, reloadTrigger);
-  const words = data || [];
+
+  const [data, setData] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { data: refreshData, error, isLoading: _} = useFetch<string[]>(API_WORDS, reloadTrigger);
+
+  const words = data;
+
+
+  useEffect(() => {
+    if (data.length === 0 && refreshData && isLoading) {
+      setData(refreshData ?? data);
+      setReloadTrigger(reloadTrigger + 1);
+      setIsLoading(false);
+    }
+  }, [refreshData]);
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.WAITING) {
+      setData(refreshData ?? data);
       setReloadTrigger(reloadTrigger + 1);
       setInputValue([""]);
     }
     inputRef.current?.focus();
-  }, [gameStatus]);
+  }, [gameStatus, reload]);
 
-  if (isLoading) 
-    return <p> Loading... </p>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full w-full font-monofett text-4xl text-foreground">
+        loading...
+      </div>
+    );
+  }
 
   if (error)
     return <p> Error: {error?.message} </p>;
@@ -68,22 +89,23 @@ const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
       return;
     }
 
-    if (activeWordIdx === words.length) {
-      return;
-    }
-
     if (e.key === KEYS.SPACE) {
       if (activeLetterIdx === 0) 
         return;
+
+      if (activeWordIdx === words.length - 1 && activeLetterIdx === words[activeWordIdx].length) {
+        setInputValue([""]);
+        setData(refreshData ?? data);
+        setReloadTrigger(reloadTrigger + 1);
+        return;
+      }
+
       setInputValue((words: string[]) => {
         const newWords = [...words];
         newWords.push("");
         return newWords;
       });
     }
-
-    if (activeLetterIdx >= words[activeWordIdx].length)
-      return;
 
     if (ALPHABET.test(e.key)) {
       setInputValue((words: string[]) => {
@@ -96,11 +118,12 @@ const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
 
   return (
     <div 
-      className="relative px-4 pt-16 flex flex-wrap h-full w-full" 
+      className="relative px-32 flex flex-wrap h-full w-full gap-y-6" 
       onMouseOver={() => inputRef.current?.focus()} 
       onFocus={() => inputRef.current?.focus()}
       tabIndex={0}
-      >
+    >
+
       <TypewriterInput inputRef={inputRef} onKeyDown={handleInput} />
 
       {  
@@ -109,11 +132,15 @@ const Typewriter = ({gameStatus, notifyStart}: TypewriterProps) => {
           const inputWord = (index < inputValue.length) ? inputValue[index] : "";
 
           return (
-            <span key={word + String(index)} className="inline-block">
-              <Word inputWord={inputWord} active={isActiveWord}>
+            <span 
+              key={word + String(index)} 
+              className="inline-block"
+            >
+              <Word inputWord={inputWord} active={isActiveWord} gameStatus={gameStatus}>
                 {word}
               </Word>
-              <Space active={index === activeWordIdx && word.length === activeLetterIdx}/>
+
+              <Space active={index === activeWordIdx && word.length <= activeLetterIdx}/>
             </span>
           )
         })

@@ -40,7 +40,7 @@ function Timer({gameStatus, initialTime, notifyEnd}: TimerProps) {
   }, [gameStatus]);
 
   return (
-    <div className={`absolute flex left-16 top-4 h-full text-4xl text-yellow ${displayMode}`}>
+    <div className={`flex text-4xl text-primary ${displayMode}`}>
       {time}
     </div>
   );

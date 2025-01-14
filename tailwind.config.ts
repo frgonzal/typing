@@ -1,3 +1,5 @@
+import { g } from "framer-motion/client";
+import { Monofett } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -12,14 +14,18 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "var(--primary)",
         white: "var(--white)",
         red: "var(--red)",
         yellow: "var(--yellow)",
+        green: "var(--green)",
         "smooth-white": "var(--smooth-white)",
       },
 
       fontFamily: {
-        mono: "var(--font-geist-mono)"
+        sans: "var(--font-geist-sans)",
+        mono: "var(--font-geist-mono)",
+        monofett: "var(--font-monofett)",
       },
 
       keyframes: {

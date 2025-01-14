@@ -1,22 +1,34 @@
 import { useMemo } from "react";
-import { LETTER_STATUS as STATUS } from "@/constants/game";
+import Cursor from "./Cursor";
 
 interface LetterProps {
-  children: string;
-  inputLetter?: string;
-  active: boolean;
+  children: string;     // The letter to show
+  inputLetter?: string; // The letter that the user has input
+  correctLetter: string;// The correct letter
+  active: boolean;      // If the letter is the active one
+  gameStatus: symbol;
 }
 
+const STATUS = Object.freeze({
+  CORRECT: "text-foreground",
+  INCORRECT: "text-red",
+  NOT_GUESSED: "text-smooth-white",
+})
 
-
-function Letter({children, inputLetter = "", active}: LetterProps) {
-  const letter = children;
+/**
+ * Letter component
+ * - Shows a letter with a different style depending on the input
+ * - If the input is empty, the letter is not guessed
+ * - If the input is the correct letter, the letter is correct
+ * - If the input is not the correct letter, the letter is incorrect
+ * - If the letter is active, a cursor is shown
+ */
+function Letter({ children, inputLetter = "", correctLetter, active, gameStatus }: LetterProps) {
 
   const letterStatusStyle = useMemo(() => {
     if (inputLetter === "")
       return STATUS.NOT_GUESSED;
-
-    if (inputLetter === letter)
+    if (inputLetter === correctLetter)
       return STATUS.CORRECT;
     else
       return STATUS.INCORRECT;
@@ -24,9 +36,9 @@ function Letter({children, inputLetter = "", active}: LetterProps) {
 
   return (
     <span className="relative font-mono text-4xl">
-      { active && <span className="absolute left-[-12px] text-yellow">|</span> }
+      { active && <Cursor gameStatus={gameStatus}/> }
       <span className={`${letterStatusStyle}`}>
-        {letter}
+        {children}
       </span>
     </span>
   );

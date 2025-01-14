@@ -6,7 +6,7 @@ interface SpaceProps {
 
 function Space({active}: SpaceProps) {
   return (
-    <Letter inputLetter=" " active={active}>
+    <Letter inputLetter=" " active={active} correctLetter=" ">
       &nbsp;
     </Letter>
   );

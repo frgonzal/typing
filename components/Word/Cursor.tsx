@@ -12,7 +12,9 @@ const Cursor = ({ gameStatus }: CursorProps) => {
   const blinkMode = useMemo(() => {
     if (gameStatus === GAME_STATUS.WAITING)
       return "animate-blink";
-    return "";
+    if (gameStatus === GAME_STATUS.RUNNING)
+      return "";
+    return "hidden";
   }, [gameStatus]);
 
   return (

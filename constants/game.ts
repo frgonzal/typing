@@ -12,10 +12,9 @@ export const KEYS = Object.freeze({
   SPACE: " ",
 });
 
-export const WORDS_TO_SHOW = 3;
+export const TOTAL_WORDS = 30;
 
-// export const API_WORDS = `https://random-word-api.vercel.app/api?words=${WORDS_TO_SHOW}`;
-export const API_WORDS = `https://random-word.ryanrk.com/api/en/word/random/${WORDS_TO_SHOW}`;
+export const API_WORDS = `https://random-word-api.vercel.app/api?words=${TOTAL_WORDS}`;
 
 export const ALPHABET = /^[a-zA-Z0-9]$/;
 

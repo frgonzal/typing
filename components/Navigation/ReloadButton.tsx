@@ -8,6 +8,12 @@ interface ReloadButtonProps {
 
 
 const ReloadButton = ({ onAction }: ReloadButtonProps) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLImageElement>) => {
+    if (e.key === "Enter") {
+      onAction();
+    }
+  }
+
   return (
     <Image 
       src={ArrowClockwiseImg} 
@@ -15,7 +21,7 @@ const ReloadButton = ({ onAction }: ReloadButtonProps) => {
       width={40}
       className="cursor-pointer"
       onClick={onAction}
-      onKeyDown={onAction}
+      onKeyDown={handleKeyDown}
       tabIndex={0}
     />
   );

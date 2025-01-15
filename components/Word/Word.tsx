@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import Letter from "@/components/Word/Letter";
+import { input } from "framer-motion/client";
 // import { input } from "framer-motion/client";
 
 interface WordProps {

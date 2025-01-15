@@ -10,7 +10,7 @@ function InputTypewriter({inputRef, onKeyDown}: InputTypewriterProps) {
       ref={inputRef}
       onKeyDown={onKeyDown}
       autoFocus
-      tabIndex={0}
+      // tabIndex={0}
       >
     </input>
   );

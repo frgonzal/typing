@@ -32,7 +32,7 @@ function Letter({ children, inputLetter = "", correctLetter, active, gameStatus 
       return STATUS.CORRECT;
     else
       return STATUS.INCORRECT;
-  }, [inputLetter, active]);
+  }, [inputLetter, correctLetter]);
 
   return (
     <span className="relative font-mono text-4xl">

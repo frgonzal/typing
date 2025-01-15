@@ -4,7 +4,7 @@ import Space from "@/components/Word/Space";
 import TypewriterInput from "@/components/Input/TypewriterInput";
 import { useState, useRef, useEffect } from "react";
 import { GAME_STATUS, KEYS, API_WORDS, ALPHABET } from "@/constants/game";
-import useFetch from "@/hooks/useFetch";
+import useFetchFaster from "@/hooks/useFetchFaster";
 
 
 interface TypewriterProps {
@@ -20,26 +20,12 @@ const Typewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) => {
   const activeLetterIdx = inputValue[activeWordIdx]?.length || 0;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [data, setData] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { data: refreshData, error, isLoading: _} = useFetch<string[]>(API_WORDS, reloadTrigger);
-
-  const words = data;
-
-
-  useEffect(() => {
-    if (data.length === 0 && refreshData && isLoading) {
-      setData(refreshData ?? data);
-      setReloadTrigger(reloadTrigger + 1);
-      setIsLoading(false);
-    }
-  }, [refreshData]);
+  const { data, error, isLoading } = useFetchFaster<string[]>(API_WORDS, reloadTrigger);
+  const words = data ?? [];
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.WAITING) {
-      setData(refreshData ?? data);
-      setReloadTrigger(reloadTrigger + 1);
+      setReloadTrigger(prev => prev + 1);
       setInputValue([""]);
     }
     inputRef.current?.focus();
@@ -93,10 +79,9 @@ const Typewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) => {
       if (activeLetterIdx === 0) 
         return;
 
-      if (activeWordIdx === words.length - 1 && activeLetterIdx === words[activeWordIdx].length) {
+      if (activeWordIdx === words.length - 1) {
         setInputValue([""]);
-        setData(refreshData ?? data);
-        setReloadTrigger(reloadTrigger + 1);
+        setReloadTrigger(reload => reload + 1);
         return;
       }
 
@@ -140,7 +125,7 @@ const Typewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) => {
                 {word}
               </Word>
 
-              <Space active={index === activeWordIdx && word.length <= activeLetterIdx}/>
+              <Space active={index === activeWordIdx && word.length <= activeLetterIdx} gameStatus={gameStatus}/>
             </span>
           )
         })

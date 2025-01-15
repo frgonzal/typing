@@ -1,4 +1,4 @@
-import { use, useMemo } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { GAME_STATUS } from "@/constants/game";
 

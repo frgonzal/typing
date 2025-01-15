@@ -38,7 +38,7 @@ function Word({ children, inputWord, active, gameStatus }: WordProps) {
       return STATUS.CORRECT;
     else
       return STATUS.INCORRECT;
-  }, [inputWord, active]);
+  }, [inputWord, word, active]);
 
   return (
     <span className={`${wordStatus}`}>

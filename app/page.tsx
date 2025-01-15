@@ -4,7 +4,7 @@ import Timer from '@/components/Progress/Timer';
 import TimedTypewriter from '@/components/Typewriter/TimedTypewriter';
 import { GAME_STATUS, INITIAL_TIME } from '@/constants/game';
 import ReloadButton from '@/components/Navigation/ReloadButton';
-import Statistics from '@/components/Dashboard/Statistics';
+// import Statistics from '@/components/Dashboard/Statistics';
 
 
 
@@ -51,4 +51,3 @@ const Home = () => {
 }
 
 export default Home;
-export { GAME_STATUS };

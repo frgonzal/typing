@@ -37,7 +37,7 @@ function Timer({gameStatus, initialTime, notifyEnd}: TimerProps) {
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [gameStatus]);
+  }, [gameStatus, initialTime, notifyEnd]);
 
   return (
     <div className={`flex text-4xl text-primary ${displayMode}`}>

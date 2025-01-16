@@ -1,22 +1,23 @@
+// import { line } from "framer-motion/client";
 import { useEffect, useState } from "react";
 
-const useRange = (containerRef: React.RefObject<HTMLDivElement | null>, gameStatus: symbol, activeWordIdx: number, lastLineForInput: number = 2, linesAbove: number = 1) => {
+const useRange = (ref: React.RefObject<HTMLDivElement | null>, gameStatus: symbol, activeWordIdx: number, maxVisibleLines: number) => {
   const [firstWordIdx, setFirstWordIdx] = useState(0);
   const [lastWordIdx, setLastWordIdx] = useState(0);
   const [isFull, setIsFull] = useState(true);
 
+
   useEffect(() => {
     const calculateVisibleWords = () => {
-      const container = containerRef.current;
-      if (!container) {
+      const container = ref.current;
+      if (!container)
         return;
-      };
 
-      const containerHeight = container.clientHeight || 0;
       const containerWidth = container.clientWidth - 128 * 2;
 
-      const lineHeight = parseFloat(getComputedStyle(container).lineHeight);
-      const maxVisibleLines = Math.floor(containerHeight / lineHeight);
+      // const lineHeight = parseFloat(getComputedStyle(container).lineHeight);
+      // const maxVisibleLines = Math.floor(containerHeight / lineHeight);
+      // const containerHeight = lineHeight * maxVisibleLines;
 
       let currentWidth = 0;
       let currentLine = 1;
@@ -29,6 +30,7 @@ const useRange = (containerRef: React.RefObject<HTMLDivElement | null>, gameStat
         const wordWidth = child.clientWidth;
 
         if (currentWidth + wordWidth > containerWidth && currentLine == maxVisibleLines) {
+          console.log("break", currentLine, currentWidth, wordWidth, containerWidth);
           break;
         }
 
@@ -38,15 +40,17 @@ const useRange = (containerRef: React.RefObject<HTMLDivElement | null>, gameStat
           currentWidth = wordWidth;
           currentLine++;
         }
-        if (currentLine <= lastLineForInput) {
+        if (currentLine <= 2) {
           lastWord++;
         }
-        if (currentLine <= linesAbove ) {
+        if (currentLine <= 1) {
           firstWord++;
         }
         totalWords++;
-      };
 
+      };
+      console.log(currentLine)
+      
       setFirstWordIdx(firstWord - 1);
       setLastWordIdx(lastWord - 1);
 
@@ -63,9 +67,9 @@ const useRange = (containerRef: React.RefObject<HTMLDivElement | null>, gameStat
     return () => {
       window.removeEventListener("resize", calculateVisibleWords);
     }
-  }, [containerRef, gameStatus, activeWordIdx, lastLineForInput, linesAbove]);
+  }, [ref, gameStatus, activeWordIdx, maxVisibleLines]);
 
-  return { firstWordIdx, lastWordIdx, isFull, containerRef };
+  return { firstWordIdx, lastWordIdx, isFull };
 };
 
 

@@ -8,10 +8,10 @@ import useRange from "@/hooks/useRange";
 
 
 interface TypewriterProps {
+  ref: React.RefObject<HTMLDivElement | null>;
   words: string[];
   inputValue: string[];
   inputRef: React.RefObject<HTMLInputElement | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
   isLoading: boolean;
   error: Error | undefined;
   gameStatus: symbol;
@@ -20,7 +20,7 @@ interface TypewriterProps {
   handleInput: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const Typewriter = ({ words, inputValue, inputRef, containerRef, isLoading, error, gameStatus, activeWordIdx, activeLetterIdx, handleInput }: TypewriterProps) => {
+const Typewriter = ({ ref, words, inputValue, inputRef, isLoading, error, gameStatus, activeWordIdx, activeLetterIdx, handleInput }: TypewriterProps) => {
 
   if (isLoading) {
     return (
@@ -37,9 +37,9 @@ const Typewriter = ({ words, inputValue, inputRef, containerRef, isLoading, erro
     <>
       <TypewriterInput inputRef={inputRef} onKeyDown={handleInput} />
       <div 
-        ref={containerRef}
+        ref={ref}
         className="relative w-full max-w-[1900px] overflow-hidden flex flex-wrap px-32" 
-        style= {{ lineHeight: "4rem", height: "20rem" }}
+        style= {{ lineHeight: "4rem", maxHeight: "20rem" }}
         onMouseOver={() => inputRef?.current?.focus()} 
         onFocus={() => inputRef?.current?.focus()}
         tabIndex={1}
@@ -48,7 +48,6 @@ const Typewriter = ({ words, inputValue, inputRef, containerRef, isLoading, erro
           words.map((word: string, index: number) => {
             const isActiveWord = index === activeWordIdx;
             const inputWord = (index < inputValue.length) ? inputValue[index] : "";
-            // console.log(inputValue, inputWord, index, activeWordIdx, activeLetterIdx);
 
             return (
               <span 

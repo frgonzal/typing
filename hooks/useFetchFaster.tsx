@@ -5,8 +5,8 @@ interface FetchState<T> {
   data?: T[];
   error?: Error;
   isLoading: boolean;
-  reloadTrigger: () => void;
-  hardReloadTrigger: () => void;
+  loadMoreData: () => void;
+  reloadData: () => void;
 }
 
 const TOTAL_WORDS = 20;
@@ -34,12 +34,13 @@ function useFetch<T>(): FetchState<T> {
     }
   };
 
-  const reloadTrigger = () => {
+  const loadMoreData = () => {
     setData(data => data.concat(refreshData));
     fetchData(setRefreshData);
+    console.log("loadMoreData");
   };
 
-  const hardReloadTrigger = () => {
+  const reloadData= () => {
     setRefreshData([]);
     if (data.length === 0) {
       fetchData(setData);
@@ -49,7 +50,7 @@ function useFetch<T>(): FetchState<T> {
     fetchData(setRefreshData);
   };
 
-  return { data, error, isLoading, reloadTrigger, hardReloadTrigger };
+  return { data, error, isLoading, loadMoreData, reloadData };
 }
 
 

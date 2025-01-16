@@ -22,14 +22,14 @@ const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) =
 
   const [offset, setOffset] = useState(0);
 
-  const { data, error, isLoading, reloadTrigger, hardReloadTrigger } = useFetchFaster<string>();
+  const { data, error, isLoading, loadMoreData, reloadData } = useFetchFaster<string>();
   const words = data ? data.slice(offset) : [];
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const { firstWordIdx, lastWordIdx, isFull } = useRange(containerRef, gameStatus, activeWordIdx, 2);
+  const { firstWordIdx, lastWordIdx, isFull } = useRange(containerRef, gameStatus, activeWordIdx, 5);
 
   const handleReload = () => {
-    hardReloadTrigger();
+    reloadData();
     setInputValue([""]);
     setOffset(0);
   }
@@ -43,7 +43,7 @@ const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) =
 
   useEffect(() => {
     if (!isFull) {
-      reloadTrigger();
+      loadMoreData();
     }
   }, [isFull]);
 
@@ -73,6 +73,7 @@ const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) =
     }
   }, [lastWordIdx, activeWordIdx]);
 
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full w-full font-monofett text-4xl text-foreground">
@@ -86,7 +87,7 @@ const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) =
 
   return (
     <Typewriter
-      containerRef={containerRef}
+      ref={containerRef}
       inputValue={inputValue}
       words={words}
       activeWordIdx={activeWordIdx}

@@ -1,8 +1,8 @@
 export const GAME_STATUS = Object.freeze({
-  WAITING: Symbol(),
-  RUNNING: Symbol(),
-  PAUSED: Symbol(),
-  ENDED: Symbol(),
+  WAITING: Symbol("waiting"),
+  RUNNING: Symbol("running"),
+  PAUSED: Symbol("paused"),
+  ENDED: Symbol("ended"),
 });
 
 export const INITIAL_TIME = 30;
@@ -12,7 +12,7 @@ export const KEYS = Object.freeze({
   SPACE: " ",
 });
 
-export const TOTAL_WORDS = 30;
+export const TOTAL_WORDS = 10;
 
 export const API_WORDS = `https://random-word-api.vercel.app/api?words=${TOTAL_WORDS}`;
 

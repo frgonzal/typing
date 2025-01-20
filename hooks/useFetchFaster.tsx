@@ -1,56 +1,47 @@
-import { useState, useEffect } from 'react';
+import { SetStateAction, use, useEffect, useState } from 'react';
 import { API_WORDS } from '@/constants/game';
+import { Dispatch } from 'react';
+
 
 interface FetchState<T> {
-  data?: T[];
+  data?: T;
   error?: Error;
   isLoading: boolean;
-  loadMoreData: () => void;
-  reloadData: () => void;
 }
 
-const TOTAL_WORDS = 20;
 
-function useFetch<T>(): FetchState<T> {
-  const [data, setData] = useState<T[]>([]);
-  const [refreshData, setRefreshData] = useState<T[]>([]);
+const useFetch = <T,>(reloadTrigger:number): FetchState<T> => {
+  const [data, setData] = useState<T | undefined>(undefined);
+  const [accData, setAccData] = useState<T | undefined>(undefined);
+  const [refreshData, setRefreshData] = useState<T | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const fetchData = async (setData: (data: T[]) => void) => {
+  const fetchData = async (setter: Dispatch<SetStateAction<T | undefined>>) => {
     try {
       const response = await fetch(API_WORDS);
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`Error: ${response.statusText}`);
-      }
-      const data: T[] = await response.json();
-      setData(data);
+      const data: T = await response.json();
+      setter(data);
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
+      if ((error as Error).name !== 'AbortError')
         setError(error as Error);
-      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const loadMoreData = () => {
-    setData(data => data.concat(refreshData));
-    fetchData(setRefreshData);
-    console.log("loadMoreData");
-  };
-
-  const reloadData= () => {
-    setRefreshData([]);
-    if (data.length === 0) {
+  useEffect(() => {
+    if (data === undefined) {
       fetchData(setData);
     } else {
       setData(refreshData)
     }
     fetchData(setRefreshData);
-  };
+  }, [reloadTrigger]);
 
-  return { data, error, isLoading, loadMoreData, reloadData };
+  return { data, error, isLoading };
 }
 
 

@@ -21,7 +21,7 @@ const Cursor = ({ gameStatus }: CursorProps) => {
     <motion.span 
       layoutId="cursor"
       transition={{
-        duration: 0.1,
+        duration: 0.11,
       }}
       className={`absolute left-[-15px] text-primary text-[2.8rem] ${blinkMode}`}
     >

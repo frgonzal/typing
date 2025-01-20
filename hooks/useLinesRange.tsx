@@ -1,23 +1,20 @@
-// import { line } from "framer-motion/client";
 import { useEffect, useState } from "react";
 
-const useRange = (ref: React.RefObject<HTMLDivElement | null>, gameStatus: symbol, activeWordIdx: number, maxVisibleLines: number) => {
+const BOX_X_PADDING = 1 * 4 * 2;
+
+
+const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, activeWordIdx: number, maxVisibleLines: number) => {
   const [firstWordIdx, setFirstWordIdx] = useState(0);
   const [lastWordIdx, setLastWordIdx] = useState(0);
   const [isFull, setIsFull] = useState(true);
-
+  // const [triggerLoad, setTriggerLoad] = useState(0);
 
   useEffect(() => {
     const calculateVisibleWords = () => {
-      const container = ref.current;
       if (!container)
         return;
 
-      const containerWidth = container.clientWidth - 128 * 2;
-
-      // const lineHeight = parseFloat(getComputedStyle(container).lineHeight);
-      // const maxVisibleLines = Math.floor(containerHeight / lineHeight);
-      // const containerHeight = lineHeight * maxVisibleLines;
+      const containerWidth = container.clientWidth - BOX_X_PADDING;
 
       let currentWidth = 0;
       let currentLine = 1;
@@ -29,8 +26,7 @@ const useRange = (ref: React.RefObject<HTMLDivElement | null>, gameStatus: symbo
         const child = container.children[i] as HTMLElement;
         const wordWidth = child.clientWidth;
 
-        if (currentWidth + wordWidth > containerWidth && currentLine == maxVisibleLines) {
-          console.log("break", currentLine, currentWidth, wordWidth, containerWidth);
+        if (currentWidth + wordWidth > containerWidth && currentLine === maxVisibleLines + 1) {
           break;
         }
 
@@ -47,14 +43,12 @@ const useRange = (ref: React.RefObject<HTMLDivElement | null>, gameStatus: symbo
           firstWord++;
         }
         totalWords++;
-
       };
-      console.log(currentLine)
-      
+
       setFirstWordIdx(firstWord - 1);
       setLastWordIdx(lastWord - 1);
 
-      if (currentLine === maxVisibleLines) {
+      if (currentLine === maxVisibleLines + 1) {
         setIsFull(true);
       } else {
         setIsFull(false);
@@ -67,10 +61,10 @@ const useRange = (ref: React.RefObject<HTMLDivElement | null>, gameStatus: symbo
     return () => {
       window.removeEventListener("resize", calculateVisibleWords);
     }
-  }, [ref, gameStatus, activeWordIdx, maxVisibleLines]);
+  }, [container, gameStatus, activeWordIdx, maxVisibleLines]);
 
   return { firstWordIdx, lastWordIdx, isFull };
 };
 
 
-export default useRange;
+export default useLinesRange;

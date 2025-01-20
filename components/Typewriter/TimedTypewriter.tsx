@@ -1,77 +1,100 @@
 'use client';
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, SetStateAction, useCallback } from "react";
 import { GAME_STATUS, ALPHABET } from "@/constants/game";
 import useFetchFaster from "@/hooks/useFetchFaster";
-import Typewriter from "./Typewriter";
+import TypewriterBox from "./TypewriterBox";
 import setInputNormal from "@/lib/setInputNormal";
-import useRange from "@/hooks/useRange";
-
+import Timer from "@/components/Progress/Timer";
+import { INITIAL_TIME } from "@/constants/game";
+import useLinesRange from "@/hooks/useLinesRange";
+import { ActiveInfo } from "@/types/status";
+import { NUMBER_OF_LINES } from "@/constants/typewriter";
+import TimedStatistics from "@/components/Dashboard/TimedStatistics";
 
 interface TypewriterProps {
   gameStatus: symbol;
-  notifyStart: () => void;
+  setGameStatus: (v: SetStateAction<symbol>) => void;
   reload: number;
 }
 
-const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) => {
+const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps) => {
+  const [reloadDataTrigger, reloadData] = useState<number>(0);
   const [inputValue, setInputValue] = useState<string[]>([""]);
-  const activeWordIdx = inputValue.length - 1;
-  const activeLetterIdx = inputValue[activeWordIdx].length;
+  const [accInput, setAccInput] = useState<string[]>([""]);
+  const [words, setWords] = useState<string[]>([]);
+  const [accWords, setAccWords] = useState<string[]>([]);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const [offset, setOffset] = useState(0);
-
-  const { data, error, isLoading, loadMoreData, reloadData } = useFetchFaster<string>();
-  const words = data ? data.slice(offset) : [];
+  const activeInfo: ActiveInfo = {
+    /* Last word and the next of the last letter */
+    word: {
+      idx: inputValue.length - 1, 
+      length: inputValue[inputValue.length - 1].length,
+    },
+    letter: {
+      idx: inputValue[inputValue.length - 1].length,
+    }
+  }
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const { firstWordIdx, lastWordIdx, isFull } = useRange(containerRef, gameStatus, activeWordIdx, 5);
+  const { data, error, isLoading } = useFetchFaster<string>(reloadDataTrigger);
+  const { firstWordIdx, lastWordIdx, isFull } = useLinesRange(containerRef.current, gameStatus, activeInfo.word.idx, NUMBER_OF_LINES);
 
-  const handleReload = () => {
-    reloadData();
+
+  const clenaup = useCallback(() => {
     setInputValue([""]);
-    setOffset(0);
-  }
+    setAccInput([""]);
+    setWords([]);
+    setAccWords([]);
+    reloadData(n => n + 1);
+  }, []);
 
-  useEffect(() => {
-    if (gameStatus === GAME_STATUS.WAITING) {
-      handleReload();
-    }
-    inputRef.current?.focus();
-  }, [gameStatus, reload]);
-
-  useEffect(() => {
-    if (!isFull) {
-      loadMoreData();
-    }
-  }, [isFull]);
-
-  const handleStart = () => {
-    if (gameStatus === GAME_STATUS.WAITING) {
-      notifyStart();
-      setInputValue([""]);
-    }
-  }
+  const handleEnd = useCallback(() => {
+    setGameStatus(GAME_STATUS.ENDED);
+  }, []);
 
   const handleInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (gameStatus === GAME_STATUS.ENDED) 
       return;
+    if (gameStatus === GAME_STATUS.PAUSED)
+      return;
+
     if (gameStatus === GAME_STATUS.WAITING) {
       if (!ALPHABET.test(e.key))
         return;
-      handleStart();
+      setGameStatus(GAME_STATUS.RUNNING);
     }
-
-    setInputNormal(e.key, activeWordIdx, activeLetterIdx, setInputValue);
+    setInputNormal(e.key, [setInputValue, setAccInput]);
   }
 
+  /* Load data when the component mounts */
   useEffect(() => {
-    if (lastWordIdx < activeWordIdx) {
-      setOffset(prev => prev + firstWordIdx + 1);
+    if (data){
+      setWords(prev => [...prev, ...data]);
+      setAccWords(prev => [...prev, ...data]);
+    }
+  }, [data]);
+
+  /* Handle game status changes */
+  useEffect(() => {
+    if (gameStatus === GAME_STATUS.WAITING){
+      clenaup();
+    }
+    containerRef.current?.focus();
+  }, [gameStatus, reload, clenaup]);
+
+  /* Remove frange 0 to firstWordIdx  when the last word is reached */
+  useEffect(() => {
+    if (lastWordIdx < activeInfo.word.idx) {
+      setWords(prev => prev.slice(firstWordIdx + 1, undefined));
       setInputValue(prev => prev.slice(firstWordIdx + 1, undefined));
     }
-  }, [lastWordIdx, activeWordIdx]);
+  }, [lastWordIdx, activeInfo.word.idx, firstWordIdx]);
+
+  /* Load more data when the last word is reached */
+  useEffect(() => {
+    if (!isFull)
+      reloadData(n => n + 1);
+  }, [isFull, activeInfo.letter.idx]);
 
 
   if (isLoading) {
@@ -82,22 +105,37 @@ const TimedTypewriter = ({ gameStatus, notifyStart, reload }: TypewriterProps) =
     );
   }
 
-  if (error)
+  if (error){
     return <p> Error: {error?.message} </p>;
+  }
 
   return (
-    <Typewriter
-      ref={containerRef}
-      inputValue={inputValue}
-      words={words}
-      activeWordIdx={activeWordIdx}
-      activeLetterIdx={activeLetterIdx}
-      gameStatus={gameStatus}
-      handleInput={handleInput}
-      inputRef={inputRef}
-      isLoading={isLoading}
-      error={error}
-    />
+    <>
+      { gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.ENDED && 
+        <div className="absolute top-4 left-32">
+          <Timer 
+            gameStatus={gameStatus} 
+            initialTime={INITIAL_TIME} 
+            handleEnd={handleEnd}
+          />
+        </div>
+      }
+
+      { gameStatus === GAME_STATUS.ENDED &&
+        <TimedStatistics words={accWords} inputWords={accInput} time={INITIAL_TIME}/>
+      }
+
+      { gameStatus !== GAME_STATUS.ENDED &&
+        <TypewriterBox
+          words={words}
+          inputWords={inputValue}
+          activeInfo={activeInfo}
+          gameStatus={gameStatus}
+          handleInput={handleInput}
+          containerRef={containerRef}
+        />
+      }
+    </>
   )
 };
 

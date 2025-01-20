@@ -11,12 +11,12 @@ const Header = () => {
 
       <div className="flex items-center justify-center gap-2 font-monofett text-4xl cursor-pointer">
         <Image src={Logo} alt="Logo" width={100} onClick={() => window.location.reload()}/>
-        <div>FRGONZAL TYPING GAME</div>
+        <div>TYPING GAME</div>
       </div>
 
       <div>
         <Link href="https://github.com/frgonzal/typing">
-          <Image src={GitHubImg} alt="GitHub" width={30}/>
+          <Image src={GitHubImg} alt="GitHub" width={30} height={30}/>
         </Link>
       </div>
     </header>

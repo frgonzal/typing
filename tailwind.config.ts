@@ -33,6 +33,10 @@ export default {
           "0%": { width: "0px" },
           "100%": { width: "100%" }
         },
+        "opacity-in": {
+          "0%": { opacity: "0"},
+          "100%": { opacity: "1" },
+        },
         "blink": {
           "0%, 100%": { opacity: "1.0" },
           "10%, 90%": { opacity: "0.8" },
@@ -41,16 +45,17 @@ export default {
           "40%, 60%": { opacity: "0.2" },
           "50%": { opacity: "0.0" },
         },
-        correct: {
-          "0%": { color: "var(--smooth-white)" },
-          "100%": { color: "var(--white)" }
-        }
+        // correct: {
+        //   "0%": { color: "var(--smooth-white)" },
+        //   "100%": { color: "var(--white)" }
+        // }
       },
 
       animation: {
         "resize-width": "resize-width 1s ease-in-out",
         "blink": "blink 1s step-end infinite",
-        correct: "correct 0.05s ease-in-out",
+        // correct: "correct 0.05s ease-in-out",
+        "opacity-in": "opacity-in 0.6s ease-in-out",
       },
 
     },

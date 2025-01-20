@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import Letter from "@/components/Word/Letter";
-import { input } from "framer-motion/client";
-// import { input } from "framer-motion/client";
+
 
 interface WordProps {
-  children: string; // The word to show
-  inputWord: string,// The word that the user has input
+  word: string; // The word to show
+  input: string,// The word that the user has input
   active: boolean;  // If the word is the active one
   gameStatus: symbol;
 }
@@ -25,35 +24,37 @@ const STATUS = Object.freeze({
  * - If the word is active, a cursor is shown
  * - If the input is longer than the word, the word is shown with the input
  */
-function Word({ children, inputWord, active, gameStatus }: WordProps) {
-  const word = children;
+function Word({ word, input, active, gameStatus }: WordProps) {
 
   const wordToDisplay = 
-    (word.length >= inputWord.length) ?
-    word : word + inputWord.slice(word.length);
+    (word.length >= input.length) ?
+    word : word + input.slice(word.length);
 
   const wordStatus = useMemo(() => {
-    if (inputWord === "" || active)
+    if (input === "" || active)
       return STATUS.NOT_GUESSED;
-    if (inputWord === word)
+    if (input === word)
       return STATUS.CORRECT;
     else
       return STATUS.INCORRECT;
-  }, [inputWord, word, active]);
+  }, [input, word, active]);
 
   return (
     <span className={`${wordStatus}`}>
       {  
-        wordToDisplay.split('').map((letter, index) => {
-          const isActiveLetter = active && index === inputWord.length;
-          const inputLetter = (index < inputWord.length) ? inputWord[index] : "";
-          const correctLetter = (index < word.length) ? word[index] : "";
+        wordToDisplay.split("").map((letter, index) => {
+          const isActiveLetter = active && index === input.length;
+          const inputLetter = (index < input.length) ? input[index] : undefined;
+          const correctLetter = (index < word.length) ? word[index] : undefined;
 
           return (
             <span key={letter + String(index)}>
-              <Letter inputLetter={inputLetter} active={isActiveLetter} correctLetter={correctLetter} gameStatus={gameStatus}>
-                {letter}
-              </Letter>
+              <Letter 
+                letter={correctLetter} 
+                input={inputLetter} 
+                active={isActiveLetter} 
+                gameStatus={gameStatus}
+              />
             </span>
           )}
         )

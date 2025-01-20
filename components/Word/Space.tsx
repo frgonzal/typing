@@ -7,9 +7,12 @@ interface SpaceProps {
 
 function Space({active, gameStatus}: SpaceProps) {
   return (
-    <Letter inputLetter=" " active={active} correctLetter=" " gameStatus={gameStatus}>
-      &nbsp;
-    </Letter>
+    <Letter 
+      letter="&nbsp;"
+      input=" "
+      active={active} 
+      gameStatus={gameStatus}
+    />
   );
 }
 export default Space;

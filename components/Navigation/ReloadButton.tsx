@@ -19,6 +19,7 @@ const ReloadButton = ({ onAction }: ReloadButtonProps) => {
       src={ArrowClockwiseImg} 
       alt="Restart" 
       width={40}
+      height={40}
       className="cursor-pointer"
       onClick={onAction}
       onKeyDown={handleKeyDown}

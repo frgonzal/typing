@@ -1,18 +1,15 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GAME_STATUS } from "@/constants/game";
 
 interface TimerProps {
   gameStatus: symbol,
   initialTime: number;
-  notifyEnd: () => void;
+  handleEnd: () => void;
 }
 
-function Timer({gameStatus, initialTime, notifyEnd}: TimerProps) {
+function Timer({gameStatus, initialTime, handleEnd}: TimerProps) {
   const [time, setTime] = useState(initialTime);
-  const displayMode = 
-      (gameStatus !== GAME_STATUS.WAITING) ?
-      "block" : "hidden";
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (gameStatus === GAME_STATUS.WAITING) {
@@ -20,27 +17,31 @@ function Timer({gameStatus, initialTime, notifyEnd}: TimerProps) {
       return;
     }
 
-    if (gameStatus === GAME_STATUS.ENDED) {
+    if (gameStatus !== GAME_STATUS.RUNNING)
       return;
-    }
 
-    const intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setTime((prevTime: number) => {
         if (prevTime === 0)
           return 0;
         if (prevTime === 1) {
-          setTimeout(() => notifyEnd(), 0);
+          setTimeout(() => handleEnd(), 0);
           return 0;
         }
         return prevTime - 1;
       })
     }, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [gameStatus, initialTime, notifyEnd]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+  }, [gameStatus, initialTime, handleEnd]);
 
   return (
-    <div className={`flex text-4xl text-primary ${displayMode}`}>
+    <div className={`flex text-4xl text-primary`}>
       {time}
     </div>
   );

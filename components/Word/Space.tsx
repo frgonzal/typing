@@ -5,7 +5,15 @@ interface SpaceProps {
   gameStatus: symbol;
 }
 
-function Space({active, gameStatus}: SpaceProps) {
+
+/**
+ * Space component that renders a `Letter` component with a non-breaking space character.
+ *
+ * @param {boolean} active - Indicates if the space is currently active.
+ * @param {symbol} gameStatus - The current status of the game.
+ * @returns {React.ReactElement} The rendered `Letter` component with a non-breaking space character.
+ */
+const Space = ({active, gameStatus}: SpaceProps): React.ReactElement => {
   return (
     <Letter 
       letter="&nbsp;"

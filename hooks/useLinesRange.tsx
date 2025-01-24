@@ -2,14 +2,33 @@ import { useEffect, useState } from "react";
 
 const BOX_X_PADDING = 1 * 4 * 2;
 
+interface LinesRangeResult {
+  firstWordIdx: number;
+  lastWordIdx: number;
+  isFull: boolean;
+}
 
-const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, activeWordIdx: number, maxVisibleLines: number) => {
+/**
+ * Custom hook to calculate the range of visible words within a container element.
+ *
+ * @param {HTMLDivElement | null} container - The container element that holds the words.
+ * @param {symbol} gameStatus - The current status of the game.
+ * @param {number} reloadTrigger - A trigger value to recalculate the visible words.
+ * @param {number} maxVisibleLines - The maximum number of visible lines in the container.
+ * @returns {Object} An object containing:
+ * - `firstWordIdx` {number} - The index of the first visible word.
+ * - `lastWordIdx` {number} - The index of the last visible word.
+ * - `isFull` {boolean} - A flag indicating if the container is full.
+ */
+const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, reloadTrigger: number, maxVisibleLines: number): LinesRangeResult => {
   const [firstWordIdx, setFirstWordIdx] = useState(0);
   const [lastWordIdx, setLastWordIdx] = useState(0);
   const [isFull, setIsFull] = useState(true);
-  // const [triggerLoad, setTriggerLoad] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const calculateVisibleWords = () => {
       if (!container)
         return;
@@ -56,14 +75,17 @@ const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, act
     };
 
     calculateVisibleWords();
-    window.addEventListener("resize", calculateVisibleWords);
+    window.addEventListener("resize", calculateVisibleWords, { signal });
+    window.addEventListener("scroll", calculateVisibleWords, { signal });
 
-    return () => {
-      window.removeEventListener("resize", calculateVisibleWords);
-    }
-  }, [container, gameStatus, activeWordIdx, maxVisibleLines]);
+    return () => controller.abort();
+  }, [container, gameStatus, reloadTrigger, maxVisibleLines]);
 
-  return { firstWordIdx, lastWordIdx, isFull };
+  return { 
+    firstWordIdx, 
+    lastWordIdx, 
+    isFull,
+  };
 };
 
 

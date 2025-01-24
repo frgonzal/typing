@@ -2,6 +2,13 @@ import { useMemo } from "react";
 import Letter from "@/components/Word/Letter";
 
 
+const STATUS = Object.freeze({
+  CORRECT: "",
+  INCORRECT: "border-b-2 border-red",
+  NOT_GUESSED: "",
+})
+
+
 interface WordProps {
   word: string; // The word to show
   input: string,// The word that the user has input
@@ -9,22 +16,20 @@ interface WordProps {
   gameStatus: symbol;
 }
 
-const STATUS = Object.freeze({
-  CORRECT: "",
-  INCORRECT: "border-b-2 border-red",
-  NOT_GUESSED: "",
-})
 
 /**
- * Word component
- * - Shows a word with a different style depending on the input
- * - If the input is empty, the word is not guessed
- * - If the input is the correct word, the word is correct
- * - If the input is not the correct word, the word is incorrect
- * - If the word is active, a cursor is shown
- * - If the input is longer than the word, the word is shown with the input
+ * Component to display a word with individual letters, highlighting the user's input and the active letter.
+ * 
+ * @component
+ * @param {Object} props - The properties object.
+ * @param {string} props.word - The word to display.
+ * @param {string} props.input - The word that the user has input.
+ * @param {boolean} props.active - If the word is the active one.
+ * @param {symbol} props.gameStatus - The current status of the game.
+ * 
+ * @returns {JSX.Element} The rendered Word component.
  */
-function Word({ word, input, active, gameStatus }: WordProps) {
+const Word = ({ word, input, active, gameStatus }: WordProps): React.ReactElement => {
 
   const wordToDisplay = 
     (word.length >= input.length) ?

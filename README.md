@@ -16,45 +16,21 @@ This Typing Game App is a web-based application built with [Next.js](https://nex
 ---
 
 ## Project Structure
+Below is the directory structure of the project along with a brief description of each directory and file.
 
 ```
 .
-├── app
-│   ├── globals.css          # Global styles
-│   ├── layout.tsx           # Root layout component
-│   └── page.tsx             # Main landing page
-├── components
-│   ├── Dashboard
-│   │   └── Statistics.tsx   # Display typing performance statistics
-│   ├── Input
-│   │   └── TypewriterInput.tsx # Input handling component
-│   ├── Layout
-│   │   └── Header.tsx       # Navigation header
-│   ├── Navigation
-│   │   └── ReloadButton.tsx # Button to restart the game
-│   ├── Progress
-│   │   └── Timer.tsx        # Timer for typing tests
-│   ├── Typewriter
-│   │   └── TimedTypewriter.tsx # Core typing component
-│   └── Word
-│       ├── Cursor.tsx       # Cursor visualization
-│       ├── Letter.tsx       # Individual letter component
-│       ├── Space.tsx        # Space handling
-│       └── Word.tsx         # Word rendering
-├── constants
-│   └── game.ts              # Game-related constants
-├── hooks
-│   └── useFetch.tsx         # Custom hook for data fetching
-├── public
-│   ├── logo.png             # App logo
-│   ├── arrow-clockwise.svg  # Reload button icon
-│   └── github-mark-white.svg # GitHub logo
+├── README.md                # Project documentation
+├── app/                      
+├── components/               # This directory contains reusable React components used throughout the project.
+├── constants/                # Game-related constants
+├── hooks/                    # Custom React hooks used throughout the project.
+├── public/
 ├── docker-compose.yaml      # Docker Compose configuration
 ├── Dockerfile               # Docker image configuration
 ├── package.json             # Dependencies and scripts
 ├── tailwind.config.ts       # TailwindCSS configuration
-├── tsconfig.json            # TypeScript configuration
-└── README.md                # Project documentation
+└── tsconfig.json            # TypeScript configuration
 ```
 
 ---
@@ -135,3 +111,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 - Inspired by [MonkeyType](https://monkeytype.com/)
 - Built with [Next.js](https://nextjs.org/) and [TailwindCSS](https://tailwindcss.com/).
+- Uses [Random Word API](https://random-word-api.vercel.app/api?) for generating words.

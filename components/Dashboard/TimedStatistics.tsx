@@ -4,7 +4,26 @@ interface TimedStatisticsProps {
   time: number;
 }
 
-const TimedStatistics = ({ words, inputWords, time }: TimedStatisticsProps) => {
+
+/**
+ * Component to display typing statistics based on the provided words, input words, and time.
+ *
+ * @param {TimedStatisticsProps} props - The properties for the TimedStatistics component.
+ * @param {string[]} props.words - The array of words that were supposed to be typed.
+ * @param {string[]} props.inputWords - The array of words that were actually typed by the user.
+ * @param {number} props.time - The time taken to type the words, in seconds.
+ *
+ * @returns {JSX.Element} The JSX element representing the typing statistics.
+ *
+ * The component calculates and displays the following statistics:
+ * - Total words typed
+ * - Number of correct words
+ * - Number of incorrect words
+ * - Letter accuracy percentage
+ * - Words per minute (WPM)
+ * - Raw words per minute (Raw WPM)
+ */
+const TimedStatistics = ({ words, inputWords, time }: TimedStatisticsProps): React.ReactElement => {
 
   const lastWordIdx = inputWords.length - 1;
   const lastWord = words[lastWordIdx].slice(0, inputWords[lastWordIdx].length);
@@ -32,8 +51,6 @@ const TimedStatistics = ({ words, inputWords, time }: TimedStatisticsProps) => {
   const WPM = Math.round(correctLetters / 5 / time * 60);
   const rawWPM = Math.round(totalTypedLetters / 5 / time * 60);
 
-
-
   return (
     <div className="flex flex-col gap-4 animate-opacity-in">
       <div className="text-white text-2xl grid grid-cols-2 gap-4 font-mono">
@@ -41,8 +58,8 @@ const TimedStatistics = ({ words, inputWords, time }: TimedStatisticsProps) => {
         <div>Correct: </div> <div>{correctWords}</div>
         <div>Incorrect: </div> <div>{inputWords.length - correctWords}</div>
         <div>Accuracy: </div> <div>{Math.round(letterAccuracy * 100)}%</div>
-        <div>Raw WPM: </div> <div>{rawWPM}</div>
         <div>WPM: </div> <div>{WPM}</div>
+        <div>Raw WPM: </div> <div>{rawWPM}</div>
       </div>
     </div>    
   );

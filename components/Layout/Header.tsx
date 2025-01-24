@@ -5,6 +5,20 @@ import GitHubImg from '@/public/github-mark-white.svg';
 import Link from 'next/link';
 
 
+/**
+ * Header component that renders the top navigation bar.
+ * 
+ * This component includes:
+ * - A logo that reloads the page when clicked.
+ * - A title "TYPING GAME".
+ * - A link to the GitHub repository with a GitHub icon.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Header />
+ * )
+ */
 const Header = () => {
   return (
     <header className="w-full px-20 py-3 flex items-center justify-between">

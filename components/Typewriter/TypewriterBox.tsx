@@ -26,7 +26,7 @@ interface TypewriterProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   gameStatus: symbol;
   activeInfo: ActiveInfo;
-  handleInput: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleInput: (input: string) => void;
 }
 
 
@@ -71,7 +71,7 @@ const TypewriterBox = ({ words, inputWords, containerRef, gameStatus, activeInfo
 
       <TypewriterInput
         inputRef={inputRef}
-        onKeyDown={handleInput}
+        onInput={handleInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
       />

@@ -1,3 +1,5 @@
+import { KEYS } from "@/constants/game";
+
 /**
  * Props for the InputTypewriter component.
  * 
@@ -9,7 +11,7 @@
  */
 interface InputTypewriterProps {
   inputRef: React.RefObject<HTMLInputElement | null>;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onInput: (input: string) => void;
   onFocus: () => void;
   onBlur: () => void;
 }
@@ -21,14 +23,31 @@ interface InputTypewriterProps {
  * @param {InputTypewriterProps} props - The properties for the component.
  * @returns {React.ReactElement} The rendered input element.
  */
-const InputTypewriter = ({inputRef, onKeyDown, onFocus, onBlur}: InputTypewriterProps): React.ReactElement => {
+const InputTypewriter = ({inputRef, onInput, onFocus, onBlur}: InputTypewriterProps): React.ReactElement => {
+
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = (e.target as HTMLInputElement).value;
+    switch (input) {
+      case "":
+        onInput(KEYS.BACKSPACE);
+        break;
+      case "  ":
+        onInput(KEYS.SPACE);
+        break;
+      default:
+        onInput(input.slice(-1));
+        break;
+    }
+  };
 
   return (
     <input 
       className="absolute opacity-0"
       type="text"
+      value={" "}
       ref={inputRef}
-      onKeyDown={onKeyDown}
+      // onKeyDown={onKeyDown}
+      onInput={handleInput}
       onFocus={onFocus}
       onBlur={onBlur}
       tabIndex={-1}

@@ -84,18 +84,18 @@ const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps)
     setGameStatus(GAME_STATUS.ENDED);
   }, []);
 
-  const handleInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInput = (input: string) => {
     if (gameStatus === GAME_STATUS.ENDED) 
       return;
     if (gameStatus === GAME_STATUS.PAUSED)
       return;
 
     if (gameStatus === GAME_STATUS.WAITING) {
-      if (!ALPHABET.test(e.key))
+      if (!ALPHABET.test(input))
         return;
       setGameStatus(GAME_STATUS.RUNNING);
     }
-    setInputNormal(e.key, setAccInput, offset);
+    setInputNormal(input, setAccInput, offset);
   }
 
   /* Load data when the component mounts */

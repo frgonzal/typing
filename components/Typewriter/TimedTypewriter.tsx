@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef, useEffect, SetStateAction, useCallback, useMemo } from "react";
-import { GAME_STATUS, ALPHABET } from "@/constants/game";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { ALPHABET } from "@/constants/game";
 import useFetchFaster from "@/hooks/useFetchFaster";
 import TypewriterBox from "./TypewriterBox";
 import setInputNormal from "@/lib/setInputNormal";
@@ -10,11 +10,11 @@ import useLinesRange from "@/hooks/useLinesRange";
 import { ActiveInfo } from "@/types/status";
 import { NUMBER_OF_LINES } from "@/constants/typewriter";
 import TimedStatistics from "@/components/Dashboard/TimedStatistics";
+import { GameState } from "@/types/state";
 
 
 interface TypewriterProps {
-  gameStatus: symbol;
-  setGameStatus: (v: SetStateAction<symbol>) => void;
+  gameState: GameState;
   reload: number;
 }
 
@@ -47,7 +47,7 @@ interface TypewriterProps {
  * 
  * The component conditionally renders a `Timer` component, a `TimedStatistics` component, and a `TypewriterBox` component based on the game status.
  */
-const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps): React.ReactElement => {
+const TimedTypewriter = ({ gameState, reload }: TypewriterProps): React.ReactElement => {
   const [reloadDataTrigger, reloadData] = useState<number>(0);
   const [accInput, setAccInput] = useState<string[]>([""]);
   const [accWords, setAccWords] = useState<string[]>([]);
@@ -71,7 +71,7 @@ const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps)
   const containerRef = useRef<HTMLDivElement>(null);
   const { data, error, isLoading } = useFetchFaster<string[]>(reloadDataTrigger);
 
-  const { firstWordIdx, lastWordIdx, isFull } = useLinesRange(containerRef.current, gameStatus, activeInfo.word.idx, NUMBER_OF_LINES);
+  const { firstWordIdx, lastWordIdx, isFull } = useLinesRange(containerRef.current, gameState, activeInfo.word.idx, NUMBER_OF_LINES);
 
   const clenaup = useCallback(() => {
     setAccInput([""]);
@@ -80,20 +80,21 @@ const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps)
     setOffset(0);
   }, []);
 
-  const handleEnd = useCallback(() => {
-    setGameStatus(GAME_STATUS.ENDED);
-  }, []);
+  // const handleEnd = useCallback(() => {
+  //   gameState.end();
+  // }, []);
 
   const handleInput = (input: string) => {
-    if (gameStatus === GAME_STATUS.ENDED) 
+    if (gameState.hasEnded) 
       return;
-    if (gameStatus === GAME_STATUS.PAUSED)
+    if (gameState.isPaused)
       return;
 
-    if (gameStatus === GAME_STATUS.WAITING) {
+    if (gameState.isWaiting) {
       if (!ALPHABET.test(input))
         return;
-      setGameStatus(GAME_STATUS.RUNNING);
+      // setGameStatus(GAME_STATUS.RUNNING);
+      gameState.start();
     }
     setInputNormal(input, setAccInput, offset);
   }
@@ -107,11 +108,11 @@ const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps)
 
   /* Handle game status changes */
   useEffect(() => { 
-    if (gameStatus === GAME_STATUS.WAITING){
+    if (gameState.isWaiting){
       clenaup();
     }
     containerRef.current?.focus();
-  }, [gameStatus, reload, clenaup]);
+  }, [gameState, reload, clenaup]);
 
   /* Remove frange 0 to firstWordIdx  when the last word is reached */
   useEffect(() => {
@@ -142,26 +143,26 @@ const TimedTypewriter = ({ gameStatus, setGameStatus, reload }: TypewriterProps)
 
   return (
     <>
-      { gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.ENDED && 
+      { !gameState.isWaiting && !gameState.hasEnded && 
         <div className="absolute top-4 left-32">
           <Timer 
-            gameStatus={gameStatus} 
+            gameState={gameState} 
             initialTime={INITIAL_TIME} 
-            handleEnd={handleEnd}
+            // handleEnd={handleEnd}
           />
         </div>
       }
 
-      { gameStatus === GAME_STATUS.ENDED &&
+      { gameState.hasEnded &&
         <TimedStatistics words={accWords} inputWords={accInput} time={INITIAL_TIME}/>
       }
 
-      { gameStatus !== GAME_STATUS.ENDED &&
+      { !gameState.hasEnded &&
         <TypewriterBox
           words={words}
           inputWords={inputValue}
           activeInfo={activeInfo}
-          gameStatus={gameStatus}
+          gameState={gameState}
           handleInput={handleInput}
           containerRef={containerRef}
         />

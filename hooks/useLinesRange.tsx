@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { GameState } from "@/types/state";
 
 const BOX_X_PADDING = 1 * 4 * 2;
 
@@ -20,7 +21,7 @@ interface LinesRangeResult {
  * - `lastWordIdx` {number} - The index of the last visible word.
  * - `isFull` {boolean} - A flag indicating if the container is full.
  */
-const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, reloadTrigger: number, maxVisibleLines: number): LinesRangeResult => {
+const useLinesRange = (container: HTMLDivElement | null, gameState: GameState, reloadTrigger: number, maxVisibleLines: number): LinesRangeResult => {
   const [firstWordIdx, setFirstWordIdx] = useState(0);
   const [lastWordIdx, setLastWordIdx] = useState(0);
   const [isFull, setIsFull] = useState(true);
@@ -79,7 +80,7 @@ const useLinesRange = (container: HTMLDivElement | null, gameStatus: symbol, rel
     window.addEventListener("scroll", calculateVisibleWords, { signal });
 
     return () => controller.abort();
-  }, [container, gameStatus, reloadTrigger, maxVisibleLines]);
+  }, [container, gameState, reloadTrigger, maxVisibleLines]);
 
   return { 
     firstWordIdx, 

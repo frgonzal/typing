@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { GAME_STATUS } from "@/constants/game";
+// import { GAME_STATUS } from "@/constants/game";
+import { GameState } from "@/types/state";
 
 
 interface TimerProps {
-  gameStatus: symbol,
+  gameState: GameState,
   initialTime: number;
-  handleEnd: () => void;
+  // handleEnd: () => void;
 }
 
 
@@ -26,17 +27,17 @@ interface TimerProps {
  *   handleEnd={() => console.log('Timer ended')}
  * />
  */
-const Timer = ({gameStatus, initialTime, handleEnd}: TimerProps): React.ReactElement => {
+const Timer = ({gameState, initialTime }: TimerProps): React.ReactElement => {
   const [time, setTime] = useState(initialTime);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (gameStatus === GAME_STATUS.WAITING) {
+    if (gameState.isWaiting) {
       setTime(initialTime);
       return;
     }
 
-    if (gameStatus !== GAME_STATUS.RUNNING)
+    if (!gameState.isRunning)
       return;
 
     intervalRef.current = setInterval(() => {
@@ -44,7 +45,7 @@ const Timer = ({gameStatus, initialTime, handleEnd}: TimerProps): React.ReactEle
         if (prevTime === 0)
           return 0;
         if (prevTime === 1) {
-          setTimeout(() => handleEnd(), 0);
+          setTimeout(() => gameState.end(), 0);
           return 0;
         }
         return prevTime - 1;
@@ -57,7 +58,7 @@ const Timer = ({gameStatus, initialTime, handleEnd}: TimerProps): React.ReactEle
         intervalRef.current = null;
       }
     }
-  }, [gameStatus, initialTime, handleEnd]);
+  }, [gameState, initialTime]);
 
   return (
     <div className={`flex text-4xl text-primary`}>

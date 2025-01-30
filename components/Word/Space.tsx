@@ -1,8 +1,9 @@
 import Letter from './Letter'
+import { GameState } from '@/types/state';
 
 interface SpaceProps {
   active: boolean;
-  gameStatus: symbol;
+  gameState: GameState;
 }
 
 
@@ -13,13 +14,13 @@ interface SpaceProps {
  * @param {symbol} gameStatus - The current status of the game.
  * @returns {React.ReactElement} The rendered `Letter` component with a non-breaking space character.
  */
-const Space = ({active, gameStatus}: SpaceProps): React.ReactElement => {
+const Space = ({active, gameState}: SpaceProps): React.ReactElement => {
   return (
     <Letter 
       letter="&nbsp;"
       input=" "
       active={active} 
-      gameStatus={gameStatus}
+      gameState={gameState}
     />
   );
 }

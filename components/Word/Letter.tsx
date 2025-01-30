@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import Cursor from "./Cursor";
+import { GameState } from "@/types/state";
 
 const STATUS = Object.freeze({
   CORRECT: "text-foreground",
@@ -11,7 +12,7 @@ interface LetterProps {
   letter?: string;     // The letter to show. If "" then is not correct
   input?: string;      // The letter that the user has input. If "" then is not guessed
   active: boolean;    // If the letter is the active one
-  gameStatus: symbol;
+  gameState: GameState;
 }
 
 /**
@@ -25,7 +26,7 @@ interface LetterProps {
  * 
  * @returns {React.ReactElement} The rendered Letter component.
  */
-const Letter = ({ letter, input, active, gameStatus }: LetterProps): React.ReactElement => {
+const Letter = ({ letter, input, active, gameState }: LetterProps): React.ReactElement => {
 
   const letterStatusStyle = useMemo(() => {
     if (input === undefined)
@@ -39,7 +40,7 @@ const Letter = ({ letter, input, active, gameStatus }: LetterProps): React.React
   return (
     <span className="relative font-mono text-4xl">
       { active && 
-        <Cursor gameStatus={gameStatus}/> 
+        <Cursor gameState={gameState}/> 
       }
       <span className={`${letterStatusStyle}`}>
         {letter === undefined ? input : letter}

@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import { GAME_STATUS } from "@/constants/game";
+import { GameState } from "@/types/state";
 
 
 interface CursorProps {
-  gameStatus: symbol;
+  gameState: GameState;
 }
 
 
@@ -21,14 +21,14 @@ interface CursorProps {
  * - No additional styles when the game is running.
  * - "hidden" when the game is in any other state.
  */
-const Cursor = ({ gameStatus }: CursorProps): React.ReactElement => {
+const Cursor = ({ gameState }: CursorProps): React.ReactElement => {
   const blinkMode = useMemo(() => {
-    if (gameStatus === GAME_STATUS.WAITING)
+    if (gameState.isWaiting)
       return "animate-blink";
-    if (gameStatus === GAME_STATUS.RUNNING)
+    if (gameState.isRunning)
       return "";
     return "hidden";
-  }, [gameStatus]);
+  }, [gameState]);
 
   return (
     <motion.span 

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import Letter from "@/components/Word/Letter";
+import { GameState } from "@/types/state";
 
 
 const STATUS = Object.freeze({
@@ -11,9 +12,9 @@ const STATUS = Object.freeze({
 
 interface WordProps {
   word: string; // The word to show
-  input: string,// The word that the user has input
+  input: string;// The word that the user has input
   active: boolean;  // If the word is the active one
-  gameStatus: symbol;
+  gameState: GameState;
 }
 
 
@@ -25,11 +26,11 @@ interface WordProps {
  * @param {string} props.word - The word to display.
  * @param {string} props.input - The word that the user has input.
  * @param {boolean} props.active - If the word is the active one.
- * @param {symbol} props.gameStatus - The current status of the game.
+ * @param {symbol} props.GameState - The current status of the game.
  * 
  * @returns {JSX.Element} The rendered Word component.
  */
-const Word = ({ word, input, active, gameStatus }: WordProps): React.ReactElement => {
+const Word = ({ word, input, active, gameState }: WordProps): React.ReactElement => {
 
   const wordToDisplay = 
     (word.length >= input.length) ?
@@ -58,7 +59,7 @@ const Word = ({ word, input, active, gameStatus }: WordProps): React.ReactElemen
                 letter={correctLetter} 
                 input={inputLetter} 
                 active={isActiveLetter} 
-                gameStatus={gameStatus}
+                gameState={gameState}
               />
             </span>
           )}

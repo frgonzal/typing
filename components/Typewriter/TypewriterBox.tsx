@@ -7,6 +7,7 @@ import BlurredBackground from '@/components/Decorator/BlurredBackground';
 import Image from 'next/image';
 import { ActiveInfo } from "@/types/status";
 import { NUMBER_OF_LINES } from "@/constants/typewriter";
+import { GameState } from "@/types/state";
 
 
 /**
@@ -24,7 +25,7 @@ interface TypewriterProps {
   words: string[];
   inputWords: string[];
   containerRef: React.RefObject<HTMLDivElement | null>;
-  gameStatus: symbol;
+  gameState: GameState;
   activeInfo: ActiveInfo;
   handleInput: (input: string) => void;
 }
@@ -40,7 +41,7 @@ interface TypewriterProps {
  * @param {TypewriterProps} props - The props for the TypewriterBox component.
  * @returns {JSX.Element} The rendered TypewriterBox component.
  */
-const TypewriterBox = ({ words, inputWords, containerRef, gameStatus, activeInfo, handleInput }: TypewriterProps): React.ReactElement => {
+const TypewriterBox = ({ words, inputWords, containerRef, gameState, activeInfo, handleInput }: TypewriterProps): React.ReactElement => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const focusTimeout = useRef<NodeJS.Timeout>(null);
@@ -97,11 +98,11 @@ const TypewriterBox = ({ words, inputWords, containerRef, gameStatus, activeInfo
                     word={word} 
                     input={inputWord} 
                     active={isActiveWord} 
-                    gameStatus={gameStatus}
+                    gameState={gameState}
                   />
                   <Space 
                     active={spaceIsActive} 
-                    gameStatus={gameStatus}
+                    gameState={gameState}
                   />
                 </span>
               )
